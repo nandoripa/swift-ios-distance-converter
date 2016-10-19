@@ -10,9 +10,17 @@ import UIKit
 
 class ViewController: UIViewController {
 
+    @IBOutlet var result: UILabel!
+    @IBOutlet var optionSelected: UISegmentedControl!
+    @IBOutlet var numberToConvert: UITextField!
+    
+    let mileUnit : Float = 1.609344
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
+        
+        result.text = ""
     }
 
     override func didReceiveMemoryWarning() {
@@ -21,5 +29,18 @@ class ViewController: UIViewController {
     }
 
 
+    @IBAction func convert(_ sender: UIButton) {
+        
+        let valueToConvert : Float = Float(numberToConvert.text!)!
+        
+        if optionSelected.selectedSegmentIndex == 0 {
+            let convertedValue = String.init(format: "%.2f", valueToConvert * mileUnit)
+            result.text = "\(convertedValue) kilómetros"
+            
+        } else {
+            let convertedValue = String.init(format: "%.2f", valueToConvert / mileUnit)
+            result.text = "\(convertedValue) millas"
+        }
+    }
 }
 

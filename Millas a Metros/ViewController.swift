@@ -42,5 +42,9 @@ class ViewController: UIViewController {
             result.text = "\(convertedValue) millas"
         }
     }
+    
+    override var prefersStatusBarHidden: Bool {
+        return true
+    }
 }
 

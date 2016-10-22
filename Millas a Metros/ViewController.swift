@@ -11,10 +11,13 @@ import UIKit
 class ViewController: UIViewController {
 
     @IBOutlet var result: UILabel!
-    @IBOutlet var optionSelected: UISegmentedControl!
+    @IBOutlet var fromUnitSegmentedControl: UISegmentedControl!
+    @IBOutlet var toUnitSegmentedControl: UISegmentedControl!
     @IBOutlet var numberToConvert: UITextField!
     
     let mileUnit : Float = 1.609344
+    let yardUnit : Float = 0.0009144
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -32,19 +35,86 @@ class ViewController: UIViewController {
     @IBAction func convert(_ sender: UIButton) {
         
         let valueToConvert : Float = Float(numberToConvert.text!)!
+        var resultValue = ""
+        var originValue = ""
         
-        if optionSelected.selectedSegmentIndex == 0 {
-            let convertedValue = String.init(format: "%.2f", valueToConvert * mileUnit)
-            result.text = "\(convertedValue) kilómetros"
+        if fromUnitSegmentedControl.selectedSegmentIndex == 0 {
             
-        } else {
-            let convertedValue = String.init(format: "%.2f", valueToConvert / mileUnit)
-            result.text = "\(convertedValue) millas"
+            originValue = formatValue(result: valueToConvert, mask: "%.2f", unit: "kilómetros")
+            
+            if toUnitSegmentedControl.selectedSegmentIndex == 1 {
+                
+                let valueConverted : Float = valueToConvert / mileUnit
+                resultValue = formatValue(result: valueConverted, mask: "%.2f", unit: "millas")
+                
+            } else if toUnitSegmentedControl.selectedSegmentIndex == 2 {
+                
+                let valueConverted : Float = valueToConvert / yardUnit
+                resultValue = formatValue(result: valueConverted, mask: "%.2f", unit: "yardas")
+                
+            } else {
+                resultValue = originValue
+            }
+            
+        } else if fromUnitSegmentedControl.selectedSegmentIndex == 1 {
+            
+            originValue = formatValue(result: valueToConvert, mask: "%.2f", unit: "millas")
+            
+            if toUnitSegmentedControl.selectedSegmentIndex == 0 {
+                
+                let valueConverted : Float = valueToConvert * mileUnit
+                resultValue = formatValue(result: valueConverted, mask: "%.2f", unit: "kilometros")
+                
+            } else if toUnitSegmentedControl.selectedSegmentIndex == 2 {
+                
+                let valueConverted : Float = valueToConvert * mileUnit / yardUnit
+                resultValue = formatValue(result: valueConverted, mask: "%.2f", unit: "yardas")
+                
+            } else {
+                resultValue = originValue
+            }
+            
+        } else if fromUnitSegmentedControl.selectedSegmentIndex == 2 {
+            
+            originValue = formatValue(result: valueToConvert, mask: "%.2f", unit: "yardas")
+            
+            if toUnitSegmentedControl.selectedSegmentIndex == 0 {
+                
+                let valueConverted : Float = valueToConvert * yardUnit
+                resultValue = formatValue(result: valueConverted, mask: "%.5f", unit: "kilómetros")
+                
+            } else if toUnitSegmentedControl.selectedSegmentIndex == 1 {
+                
+                let valueConverted : Float = valueToConvert * yardUnit / mileUnit
+                resultValue = formatValue(result: valueConverted, mask: "%.5f", unit: "millas")
+
+            } else {
+                resultValue = originValue
+            }
         }
+        
+        result.text = originValue.appending(" = ").appending(resultValue)
+        
+    }
+    
+    func formatValue(result : Float, mask : String, unit : String) -> String {
+        var resultValueFormated = result.cleanValue(format: mask).appending(" ").appending(unit)
+        
+        if result == 1 {
+            resultValueFormated.remove(at: resultValueFormated.index(before: resultValueFormated.endIndex))
+        }
+        
+        return resultValueFormated
     }
     
     override var prefersStatusBarHidden: Bool {
         return true
+    }
+}
+
+extension Float {
+    func cleanValue(format : String) -> String {
+        return self.truncatingRemainder(dividingBy: 1) == 0 ? String(format: "%.0f", self) : String(format: format, self)
     }
 }
 
